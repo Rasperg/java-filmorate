@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -31,6 +33,7 @@ public class FilmController {
         } else {
             throw new ValidationException("Проблема с идентификатором фильма");
         }
+        log.info("Фильм {} добавлен", film.getName());
         return film;
     }
 
@@ -42,6 +45,7 @@ public class FilmController {
         } else {
             throw new ValidationException("Фильм не найден.");
         }
+        log.info("Информация о фильме {} обновлена", film.getName());
         return film;
     }
 

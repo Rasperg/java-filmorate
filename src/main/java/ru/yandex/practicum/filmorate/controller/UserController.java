@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,42 +15,43 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private Map<Integer, User> userMap = new HashMap<>();
+    @Getter
+    protected Map<Integer, User> userMap = new HashMap<>();
     private int id = 0;
 
     @GetMapping
-    public Collection<User> getAllUsers(){
+    public Collection<User> getAllUsers() {
         return userMap.values();
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user){
+    public User createUser(@Valid @RequestBody User user) {
         validationName(user);
         id++;
-        if (!userMap.containsKey(id)){
+        if (!userMap.containsKey(id)) {
             user.setId(id);
             userMap.put(id, user);
         } else {
             throw new ValidationException("Проблема с идентификатором пользователя");
         }
-        log.info("Добавлен пользователь {} с логином {}",user.getName(), user.getLogin());
+        log.info("Добавлен пользователь {} с логином {}", user.getName(), user.getLogin());
         return user;
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user){
+    public User updateUser(@Valid @RequestBody User user) {
         validationName(user);
-        if (userMap.containsKey(user.getId())){
+        if (userMap.containsKey(user.getId())) {
             userMap.put(user.getId(), user);
         } else {
             throw new ValidationException("Пользователь не найден.");
         }
-        log.info("Информация о пользователе {} с логином {} обновлена",user.getName() , user.getLogin());
+        log.info("Информация о пользователе {} с логином {} обновлена", user.getName(), user.getLogin());
         return user;
     }
 
-    private void validationName(User user){
-        if(user.getName() == null || user.getName().isEmpty()){
+    protected void validationName(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }

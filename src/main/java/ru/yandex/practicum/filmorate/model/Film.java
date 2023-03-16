@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+
 @Data
 public class Film {
     private int id;
@@ -14,5 +15,5 @@ public class Film {
     private final String description;
     private final LocalDate releaseDate;
     @Positive(message = "Продолжительность должны быть положительной")
-    private final Long duration;
+    private final int duration;
 }

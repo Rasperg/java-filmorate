@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -15,19 +16,20 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private Map<Integer, Film> filmMap = new HashMap<>();
+    @Getter
+    protected Map<Integer, Film> filmMap = new HashMap<>();
     private int id = 0;
 
     @GetMapping
-    public Collection<Film> getAllFilms(){
+    public Collection<Film> getAllFilms() {
         return filmMap.values();
     }
 
     @PostMapping
-    public Film createFilm(@Valid  @RequestBody Film film){
+    public Film createFilm(@Valid @RequestBody Film film) {
         validationDate(film);
         id++;
-        if (!filmMap.containsKey(id)){
+        if (!filmMap.containsKey(id)) {
             film.setId(id);
             filmMap.put(id, film);
         } else {
@@ -38,9 +40,9 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film){
+    public Film updateFilm(@Valid @RequestBody Film film) {
         validationDate(film);
-        if (filmMap.containsKey(film.getId())){
+        if (filmMap.containsKey(film.getId())) {
             filmMap.put(film.getId(), film);
         } else {
             throw new ValidationException("Фильм не найден.");
@@ -49,10 +51,10 @@ public class FilmController {
         return film;
     }
 
-    private void validationDate(Film film){
-        LocalDate minReleaseDate = LocalDate.of(1895,12,28);
+    protected void validationDate(Film film) {
+        LocalDate minReleaseDate = LocalDate.of(1895, 12, 28);
 
-        if (film.getReleaseDate().isBefore(minReleaseDate)){
+        if (film.getReleaseDate().isBefore(minReleaseDate)) {
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
         }
     }

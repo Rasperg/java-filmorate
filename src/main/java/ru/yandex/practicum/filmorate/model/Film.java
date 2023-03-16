@@ -1,19 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import org.apache.tomcat.jni.Time;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 @Data
 public class Film {
     private int id;
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Имя не может отсутствовать")
+    @NotEmpty(message = "Имя не может быть пустым")
     private final String name;
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 200, message = "Описание должно содержать от 1 до 200 символов")
     private final String description;
     private final LocalDate releaseDate;
-    @Min(value = 1)
+    @Positive(message = "Продолжительность должны быть положительной")
     private final Long duration;
 }

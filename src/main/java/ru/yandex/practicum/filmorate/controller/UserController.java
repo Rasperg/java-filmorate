@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user){
+    public User createUser(@Valid @RequestBody User user){
+        validationName(user);
         id++;
         if (!userMap.containsKey(id)){
             user.setId(id);
@@ -34,7 +34,8 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user){
+    public User updateUser(@Valid @RequestBody User user){
+        validationName(user);
         if (userMap.containsKey(user.getId())){
             userMap.put(user.getId(), user);
         } else {
@@ -43,9 +44,9 @@ public class UserController {
         return user;
     }
 
-    private void validationUser(User user){
-        if(user.getEmail().isEmpty() || user.getEmail() == null){
-            throw new ValidationException("Отсутствует название фильма");
+    private void validationName(User user){
+        if(user.getName() == null || user.getName().isEmpty()){
+            user.setName(user.getLogin());
         }
     }
 }

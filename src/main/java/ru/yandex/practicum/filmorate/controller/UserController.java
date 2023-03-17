@@ -26,9 +26,9 @@ public class UserController {
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        validationName(user);
         id++;
         if (!userMap.containsKey(id)) {
+            ensureNamePresent(user);
             user.setId(id);
             userMap.put(id, user);
         } else {
@@ -40,8 +40,8 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        validationName(user);
         if (userMap.containsKey(user.getId())) {
+            ensureNamePresent(user);
             userMap.put(user.getId(), user);
         } else {
             throw new ValidationException("Пользователь не найден.");
@@ -50,7 +50,7 @@ public class UserController {
         return user;
     }
 
-    protected void validationName(User user) {
+    protected void ensureNamePresent(User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }

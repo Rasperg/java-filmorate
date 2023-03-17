@@ -19,6 +19,7 @@ public class FilmController {
     @Getter
     protected Map<Integer, Film> filmMap = new HashMap<>();
     private int id = 0;
+    private static final LocalDate minReleaseDate = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> getAllFilms() {
@@ -52,10 +53,8 @@ public class FilmController {
     }
 
     protected void validationDate(Film film) {
-        LocalDate minReleaseDate = LocalDate.of(1895, 12, 28);
-
         if (film.getReleaseDate().isBefore(minReleaseDate)) {
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
+            throw new ValidationException("Дата релиза не может быть раньше" + minReleaseDate);
         }
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 
 import javax.validation.ValidationException;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class ExceptionHandlers {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handlerNotFoundException(final ValidationException e) {
+    public Map<String, String> handlerNotFoundException(final ObjectNotFoundException e) {
         return Map.of("Object not found 404", e.getMessage());
     }
 

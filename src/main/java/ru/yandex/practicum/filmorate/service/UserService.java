@@ -98,7 +98,7 @@ public class UserService {
     }
 
     private void checkUser(int id) {
-        if (!userStorage.getUserMap().containsKey(id)) {
+        if (userStorage.getUserById(id) == null) {
             throw new ObjectNotFoundException("Пользователь не найден");
         }
     }

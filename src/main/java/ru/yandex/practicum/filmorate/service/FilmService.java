@@ -76,7 +76,7 @@ public class FilmService {
     }
 
     private void checkFilm(int id) {
-        if (!filmStorage.getFilmMap().containsKey(id)) {
+        if (filmStorage.getFilmById(id) == null) {
             throw new ObjectNotFoundException("Фильм не найден");
         }
     }

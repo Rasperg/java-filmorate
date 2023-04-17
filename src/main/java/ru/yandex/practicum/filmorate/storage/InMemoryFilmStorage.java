@@ -23,6 +23,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Map<Integer, Film> getFilmMap() {
+        return filmMap;
+    }
+
+    @Override
     public Film createFilm(Film film) {
         validationDate(film);
         id++;

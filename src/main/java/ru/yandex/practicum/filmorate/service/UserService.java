@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -48,7 +49,7 @@ public class UserService {
 
     public List<User> uniteFriends(int firstId, int secondId) {
         if (userStorage.getUserById(firstId) == null || userStorage.getUserById(secondId) == null) {
-            throw new ValidationException("Переданы некорректные идентификаторы пользователей");
+            throw new ObjectNotFoundException("Переданы некорректные идентификаторы пользователей");
         }
         if (userStorage.getUserById(firstId).getFriends().contains(secondId)) {
             throw new ValidationException("Пользователи уже добавлены в список друзей");
@@ -63,7 +64,7 @@ public class UserService {
 
     public List<User> removeFriends(int firstId, int secondId) {
         if (userStorage.getUserById(firstId) == null || userStorage.getUserById(secondId) == null) {
-            throw new ValidationException("Переданы некорректные идентификаторы пользователей");
+            throw new ObjectNotFoundException("Переданы некорректные идентификаторы пользователей");
         }
         if (!userStorage.getUserById(firstId).getFriends().contains(secondId)) {
             throw new ValidationException("Пользователи не состоят в списке друзей");
@@ -100,7 +101,7 @@ public class UserService {
 
     private void checkUser(int id) {
         if (userStorage.getUserById(id) == null) {
-            throw new ValidationException("Пользователь не найден");
+            throw new ObjectNotFoundException("Пользователь не найден");
         }
     }
 }

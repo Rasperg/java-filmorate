@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -57,7 +57,7 @@ public class FilmService {
         checkFilm(filmId);
 
         if (!filmStorage.getFilmById(filmId).getUsersLikes().contains(userId)) {
-            throw new ValidationException("Лайк от пользователя отсутствует");
+            throw new ObjectNotFoundException("Лайк от пользователя отсутствует");
         }
 
         filmStorage.getFilmById(filmId).getUsersLikes().remove(userId);
@@ -77,7 +77,7 @@ public class FilmService {
 
     private void checkFilm(int id) {
         if (filmStorage.getFilmById(id) == null) {
-            throw new ValidationException("Фильм не найден");
+            throw new ObjectNotFoundException("Фильм не найден");
         }
     }
 }

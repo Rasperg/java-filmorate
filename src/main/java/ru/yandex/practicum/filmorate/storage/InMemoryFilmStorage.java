@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             film.setId(id);
             filmMap.put(id, film);
         } else {
-            throw new ValidationException("Проблема с идентификатором фильма");
+            throw new ObjectNotFoundException("Проблема с идентификатором фильма");
         }
         log.info("Фильм {} добавлен", film.getName());
         return film;
@@ -42,7 +42,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (filmMap.containsKey(film.getId())) {
             filmMap.put(film.getId(), film);
         } else {
-            throw new ValidationException("Фильм не найден.");
+            throw new ObjectNotFoundException("Фильм не найден.");
         }
         log.info("Информация о фильме {} обновлена", film.getName());
         return film;
@@ -62,7 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     protected void validationDate(Film film) {
         if (film.getReleaseDate().isBefore(minReleaseDate)) {
-            throw new ValidationException("Дата релиза не может быть раньше" + minReleaseDate);
+            throw new ObjectNotFoundException("Дата релиза не может быть раньше" + minReleaseDate);
         }
     }
 }

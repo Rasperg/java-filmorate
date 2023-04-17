@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -51,7 +51,7 @@ public class UserService {
         checkUser(firstId);
         checkUser(secondId);
         if (userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new ValidationException("Пользователи уже добавлены в список друзей");
+            throw new InternalException("Пользователи уже добавлены в список друзей");
         }
         userStorage.getUserById(firstId).getFriends().add(secondId);
         userStorage.getUserById(secondId).getFriends().add(firstId);
@@ -65,7 +65,7 @@ public class UserService {
         checkUser(firstId);
         checkUser(secondId);
         if (!userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new ValidationException("Пользователи не состоят в списке друзей");
+            throw new InternalException("Пользователи не состоят в списке друзей");
         }
         userStorage.getUserById(firstId).getFriends().remove(secondId);
         userStorage.getUserById(secondId).getFriends().remove(firstId);

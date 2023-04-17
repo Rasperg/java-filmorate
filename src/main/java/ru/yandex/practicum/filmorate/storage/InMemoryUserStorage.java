@@ -21,6 +21,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public Map<Integer, User> getUserMap() {
+        return userMap;
+    }
+
+    @Override
     public User createUser(User user) {
         id++;
         if (!userMap.containsKey(id)) {
@@ -36,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (userMap.containsKey(user.getId())) {
+        if (getUserMap().containsKey(user.getId())) {
             ensureNamePresent(user);
             userMap.put(user.getId(), user);
         } else {

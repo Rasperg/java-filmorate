@@ -48,9 +48,8 @@ public class UserService {
     }
 
     public List<User> uniteFriends(int firstId, int secondId) {
-        if (userStorage.getUserById(firstId) == null || userStorage.getUserById(secondId) == null) {
-            throw new ObjectNotFoundException("Переданы некорректные идентификаторы пользователей");
-        }
+        checkUser(firstId);
+        checkUser(secondId);
         if (userStorage.getUserById(firstId).getFriends().contains(secondId)) {
             throw new ValidationException("Пользователи уже добавлены в список друзей");
         }
@@ -63,9 +62,8 @@ public class UserService {
     }
 
     public List<User> removeFriends(int firstId, int secondId) {
-        if (userStorage.getUserById(firstId) == null || userStorage.getUserById(secondId) == null) {
-            throw new ObjectNotFoundException("Переданы некорректные идентификаторы пользователей");
-        }
+        checkUser(firstId);
+        checkUser(secondId);
         if (!userStorage.getUserById(firstId).getFriends().contains(secondId)) {
             throw new ValidationException("Пользователи не состоят в списке друзей");
         }
@@ -100,7 +98,7 @@ public class UserService {
     }
 
     private void checkUser(int id) {
-        if (userStorage.getUserById(id) == null) {
+        if (!userStorage.getUserMap().containsKey(id)) {
             throw new ObjectNotFoundException("Пользователь не найден");
         }
     }

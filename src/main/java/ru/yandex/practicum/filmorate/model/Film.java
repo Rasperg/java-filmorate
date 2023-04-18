@@ -21,12 +21,14 @@ public class Film {
     @Getter
     private String name;
 
+    @Getter
     @Size(min = 1, max = 200, message = "Описание должно содержать от 1 до 200 символов")
     private String description;
 
     @Getter
     private LocalDate releaseDate;
 
+    @Getter
     @Positive(message = "Продолжительность должны быть положительной")
     private int duration;
 

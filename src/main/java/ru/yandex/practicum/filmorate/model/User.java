@@ -16,6 +16,7 @@ public class User {
     @Setter
     private int id;
 
+    @Getter
     @Email(message = "Ошибка в адресе электронной почты")
     private String email;
 
@@ -27,6 +28,7 @@ public class User {
     @Setter
     private String name;
 
+    @Getter
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 

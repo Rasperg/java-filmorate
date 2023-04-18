@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        return filmMap.values();
+        return new ArrayList<>(filmMap.values());
     }
 
     @Override
@@ -61,7 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    protected void validationDate(Film film) {
+    private void validationDate(Film film) {
         if (film.getReleaseDate().isBefore(minReleaseDate)) {
             throw new ValidationException("Дата релиза не может быть раньше" + minReleaseDate);
         }

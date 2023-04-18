@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +13,12 @@ import java.util.Map;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    protected Map<Integer, User> userMap = new HashMap<>();
+    private final Map<Integer, User> userMap = new HashMap<>();
     private int id = 0;
 
     @Override
     public Collection<User> getAllUsers() {
-        return userMap.values();
+        return new ArrayList<>(userMap.values());
     }
 
     @Override
@@ -58,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    protected void ensureNamePresent(User user) {
+    private void ensureNamePresent(User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }

@@ -10,9 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +20,7 @@ public class Film {
     private int id;
 
     @NotNull(message = "Имя не может отсутствовать")
-    @NotBlank(message = "Имя не может быть пустым")
+    @NotBlank(message = "Некорректное название фильма")
     @Getter
     private String name;
 

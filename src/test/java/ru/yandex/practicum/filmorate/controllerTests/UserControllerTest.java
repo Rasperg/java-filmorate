@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-//import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
@@ -175,19 +174,6 @@ public class UserControllerTest {
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
-   /* @Test
-    void addFriendsAlreadySetFriendshipTest() throws Exception {
-        userDbStorage.followUser(2, 1);
-
-        mockMvc.perform(
-                        put("/users/2/friends/1")
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InternalException))
-                .andExpect(result -> assertEquals("Пользователь уже подписан",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
-    }*/
-
     @Test
     void removeFriendsTest() throws Exception {
         userDbStorage.createUser(user2);
@@ -199,18 +185,6 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> assertEquals(0, userDbStorage.getFriendsListById(2).size()));
     }
-
-   /* @Test
-    void removeFollowingWithoutFollowingTest() throws Exception {
-
-        mockMvc.perform(
-                        delete("/users/5/friends/63")
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InternalException))
-                .andExpect(result -> assertEquals("Пользователь не подписан",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
-    }*/
 
     @Test
     void getFriendsListByIdTest() throws Exception {

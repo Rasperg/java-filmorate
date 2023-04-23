@@ -32,12 +32,18 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
         log.info("Пользователь добавлен");
         return userDbStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         checkUser(user.getId());
+        if (user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
         log.info("Пользователь {} обновлен", user.getId());
         return userDbStorage.updateUser(user);
     }

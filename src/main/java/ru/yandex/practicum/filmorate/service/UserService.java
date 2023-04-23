@@ -7,8 +7,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
 import java.util.Collection;
 import java.util.List;

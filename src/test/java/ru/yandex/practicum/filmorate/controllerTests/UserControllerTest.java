@@ -10,8 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -19,7 +19,8 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,8 +35,8 @@ public class UserControllerTest {
 
     @Autowired
     public UserControllerTest(ObjectMapper objectMapper,
-                               UserDbStorage userDbStorage,
-                               MockMvc mockMvc) {
+                              UserDbStorage userDbStorage,
+                              MockMvc mockMvc) {
         this.objectMapper = objectMapper;
         this.userDbStorage = userDbStorage;
         this.mockMvc = mockMvc;
@@ -213,14 +214,14 @@ public class UserControllerTest {
 
     @Test
     void getFriendsListByIdTest() throws Exception {
-        userDbStorage.followUser(1,2);
+        userDbStorage.followUser(1, 2);
 
         mockMvc.perform(
                         get("/users/1/friends")
                 )
                 .andExpect(status().isOk())
                 .andExpect(result -> assertEquals(1, userDbStorage.getFriendsListById(1).size()));
-        userDbStorage.unfollowUser(1,2);
+        userDbStorage.unfollowUser(1, 2);
     }
 
     @Test

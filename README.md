@@ -1,4 +1,5 @@
 # java-filmorate
 
 Схема БД Filmorate
-![Скриншот 21 04 23_23 43 41](https://user-images.githubusercontent.com/110325389/233712464-168ccad5-b066-46a0-898e-8f45296a4005.jpg)
+
+![Схема БД](https://user-images.githubusercontent.com/110325389/233851802-c3b0e938-086d-42f8-8566-1dc38ebf7f12.jpg)

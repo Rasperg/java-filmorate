@@ -4,84 +4,79 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
-    private static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, 12, 28);
-    private final FilmDbStorage filmDbStorage;
-    private final UserDbStorage userDbStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmDbStorage, UserDbStorage userDbStorage) {
-        this.filmDbStorage = filmDbStorage;
-        this.userDbStorage = userDbStorage;
+    public FilmService(FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
     }
 
     public Collection<Film> getAllFilms() {
         log.info("Список фильмов передан.");
-        return filmDbStorage.getAllFilms();
+        return filmStorage.getAllFilms();
     }
 
     public Film createFilm(Film film) {
-        return filmDbStorage.createFilm(film);
+        return filmStorage.createFilm(film);
     }
 
     public Film updateFilm(Film film) {
-        return filmDbStorage.updateFilm(film);
+        return filmStorage.updateFilm(film);
     }
 
-    public Optional<Film> getFilmById(int id) {
+    public Film getFilmById(int id) {
         checkFilm(id);
         log.info("Фильм с id {} передан", id);
-        return filmDbStorage.getFilmById(id);
+        return filmStorage.getFilmById(id);
     }
 
-    public Optional<Film> deleteFilmById(int id) {
+    public Film deleteFilmById(int id) {
         checkFilm(id);
         log.info("Фильм с id {} удален", id);
-        return filmDbStorage.deleteFilmById(id);
+        return filmStorage.deleteFilmById(id);
     }
 
-    public Optional<Film> addLikeToFilm(int filmId, int userId) {
+    public Film addLikeToFilm(int filmId, int userId) {
         checkFilm(filmId);
-        if (userDbStorage.getUserById(userId).isEmpty()) {
-            log.warn("Пользователь {} не найден.", userId);
-            throw new ObjectNotFoundException("Фильм или пользователь не найдены");
-        }
+        filmStorage.getFilmById(filmId).getUsersLikes().add(userId);
         log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
-
-        return filmDbStorage.addLike(filmId, userId);
+        return filmStorage.getFilmById(filmId);
     }
 
-    public Optional<Film> removeLikeToFilm(int filmId, int userId) {
+    public Film removeLikeToFilm(int filmId, int userId) {
         checkFilm(filmId);
 
-        if (userDbStorage.getUserById(userId).isEmpty()) {
-            log.warn("Пользователь {} не найден.", userId);
-            throw new ObjectNotFoundException("Фильм или пользователь не найдены");
+        if (!filmStorage.getFilmById(filmId).getUsersLikes().contains(userId)) {
+            throw new ObjectNotFoundException("Лайк от пользователя отсутствует");
         }
-        log.info("Пользователь {} удалил лайк к фильму {}", userId, filmId);
 
-        return filmDbStorage.removeLike(filmId, userId);
+        filmStorage.getFilmById(filmId).getUsersLikes().remove(userId);
+        log.info("Пользователь с id {} удалил лайк фильма с id {}", userId, filmId);
+
+        return filmStorage.getFilmById(filmId);
     }
 
     public List<Film> getBestFilms(int count) {
-        log.info("Отправлен список из {} самых популярных фильмов", count);
+        log.info("Вывод 10 наиболее популярных фильмов по количеству лайков");
 
-        return filmDbStorage.getBestFilms(count);
+        return filmStorage.getAllFilms().stream()
+                .sorted((o1, o2) -> Integer.compare(o2.getUsersLikes().size(), o1.getUsersLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private void checkFilm(int id) {
-        if (filmDbStorage.getFilmById(id) == null) {
+        if (filmStorage.getFilmById(id) == null) {
             throw new ObjectNotFoundException("Фильм не найден");
         }
     }

@@ -2,103 +2,104 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InternalException;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class UserService {
-    private final UserStorage userStorage;
+    private final UserDbStorage userDbStorage;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserService(UserDbStorage userDbStorage, JdbcTemplate jdbcTemplate) {
+        this.userDbStorage = userDbStorage;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userDbStorage.getAllUsers();
     }
 
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        return userDbStorage.createUser(user);
     }
 
     public User updateUser(User user) {
-        return userStorage.updateUser(user);
+        return userDbStorage.updateUser(user);
     }
 
-    public User getUserById(int id) {
+    public Optional<User> getUserById(int id) {
         checkUser(id);
         log.info("Пользователь с id {} передан", id);
-        return userStorage.getUserById(id);
+        return userDbStorage.getUserById(id);
     }
 
-    public User deleteUserById(int id) {
+    public Optional<User> deleteUserById(int id) {
         checkUser(id);
         log.info("Пользователь с id {} удален", id);
-        return userStorage.deleteUserById(id);
+        return userDbStorage.deleteUserById(id);
     }
 
-    public List<User> uniteFriends(int firstId, int secondId) {
-        checkUser(firstId);
-        checkUser(secondId);
-        if (userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new InternalException("Пользователи уже добавлены в список друзей");
+    public List<Integer> followUser(int followingId, int followerId) {
+        if (getUserById(followingId).isEmpty() || getUserById(followerId).isEmpty()) {
+            log.warn("Пользователи с id {} и(или) {} не найден(ы)", followingId, followerId);
+            throw new ObjectNotFoundException("Пользователи не найдены");
         }
-        userStorage.getUserById(firstId).getFriends().add(secondId);
-        userStorage.getUserById(secondId).getFriends().add(firstId);
-        log.info("Пользователи {}, {} добавлены в список друзей", userStorage.getUserById(firstId).getName(),
-                userStorage.getUserById(secondId).getName());
+        String checkFriendship = "SELECT * FROM FRIENDSHIP WHERE user_id = ? AND friend_id = ?";
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(checkFriendship, followingId, followerId);
+        if (userRows.first()) {
+            log.warn("Пользователь уже подписан");
+            throw new InternalException("Пользователь уже подписан");
+        }
+        log.info("Пользователь {} подписался на {}", followingId, followerId);
 
-        return Arrays.asList(userStorage.getUserById(firstId), userStorage.getUserById(secondId));
+        return userDbStorage.followUser(followingId, followerId);
     }
 
-    public List<User> removeFriends(int firstId, int secondId) {
-        checkUser(firstId);
-        checkUser(secondId);
-        if (!userStorage.getUserById(firstId).getFriends().contains(secondId)) {
-            throw new InternalException("Пользователи не состоят в списке друзей");
+    public List<Integer> unfollowUser(int followingId, int followerId) {
+        String checkFriendship = "SELECT * FROM FRIENDSHIP WHERE user_id = ? AND friend_id = ?";
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(checkFriendship, followingId, followerId);
+        if (!userRows.first()) {
+            log.warn("Пользователь не подписан");
+            throw new InternalException("Пользователь не подписан");
         }
-        userStorage.getUserById(firstId).getFriends().remove(secondId);
-        userStorage.getUserById(secondId).getFriends().remove(firstId);
-        log.info("Пользователи {} и {} удалены из списка друзей", userStorage.getUserById(firstId).getName(),
-                userStorage.getUserById(secondId).getName());
+        log.info("Пользователь {} отписался от {}", followerId, followingId);
 
-        return Arrays.asList(userStorage.getUserById(firstId), userStorage.getUserById(secondId));
+        return userDbStorage.unfollowUser(followingId, followerId);
     }
 
     public List<User> getFriendsListById(int id) {
-        checkUser(id);
-        log.info("Получен список друзей пользователя с id{}", userStorage.getUserById(id).getName());
+        if (getUserById(id).isEmpty()) {
+            log.warn("Пользователь с id {} не найден", id);
+            throw new ObjectNotFoundException("Пользователь не найден");
+        }
+        log.info("Запрос получения списка друзей пользователя {} выполнен", id);
 
-        return userStorage.getUserById(id).getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        return userDbStorage.getFriendsListById(id);
     }
 
     public List<User> getCommonFriendsList(int firstId, int secondId) {
-        checkUser(firstId);
-        checkUser(secondId);
-        User firstUser = userStorage.getUserById(firstId);
-        User secondUser = userStorage.getUserById(secondId);
-        log.info("Предоставлен список общих друзей {} и {}", firstUser.getName(), secondUser.getName());
+        if (getUserById(firstId).isEmpty() || getUserById(secondId).isEmpty()) {
+            log.warn("Пользователи с id {} и {} не найдены", firstId, secondId);
+            throw new ObjectNotFoundException("Пользователи не найдены");
+        }
+        log.info("Список общих друзей {} и {} отправлен", firstId, secondId);
 
-        return firstUser.getFriends().stream()
-                .filter(friendId -> secondUser.getFriends().contains(friendId))
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        return userDbStorage.getCommonFriendsList(firstId, secondId);
     }
 
     private void checkUser(int id) {
-        if (userStorage.getUserById(id) == null) {
+        if (userDbStorage.getUserById(id) == null) {
             throw new ObjectNotFoundException("Пользователь не найден");
         }
     }

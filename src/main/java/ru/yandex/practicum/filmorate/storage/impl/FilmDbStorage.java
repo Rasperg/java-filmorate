@@ -177,10 +177,10 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         long duration = rs.getLong("duration");
-        int mpa_id = rs.getInt("mpa_Id");
-        String mpa_name = rs.getString("mpa_Name");
+        int mpaId = rs.getInt("mpa_Id");
+        String mpaName = rs.getString("mpa_Name");
 
-        Mpa mpa = new Mpa(mpa_id, mpa_name);
+        Mpa mpa = new Mpa(mpaId, mpaName);
 
         return new Film(id, name, description, releaseDate, duration, mpa, findGenres(id));
     }

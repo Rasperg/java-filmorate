@@ -31,11 +31,6 @@ public class FilmService {
 
         Collection<Film> getAllFilms = filmDbStorage.getAllFilms();
 
-        if (getAllFilms.isEmpty()) {
-            log.warn("Ошибка получения фильмов");
-            throw new ObjectNotFoundException("Ошибка получения фильмов");
-        }
-
         log.info("Список фильмов передан.");
         return getAllFilms;
     }
@@ -43,10 +38,6 @@ public class FilmService {
     public Film createFilm(Film film) {
         validate(film);
         Film createFilm = filmDbStorage.createFilm(film);
-        if (createFilm == null) {
-            log.warn("Ошибка создания фильма");
-            throw new ObjectNotFoundException("Ошибка создания фильма");
-        }
         log.info("Фильм добавлен");
         return createFilm;
     }
@@ -56,10 +47,6 @@ public class FilmService {
         checkFilm(film.getId());
 
         Film updateFilm = filmDbStorage.updateFilm(film);
-        if (updateFilm == null) {
-            log.warn("Ошибка изменения фильма");
-            throw new ObjectNotFoundException("Ошибка изменения фильма");
-        }
 
         log.info("Фильм {} обновлен", film.getId());
         return updateFilm;
@@ -70,11 +57,6 @@ public class FilmService {
 
         Optional<Film> getFilmById = filmDbStorage.getFilmById(id);
 
-        if (getFilmById.isEmpty()) {
-            log.warn("Ошибка получения фильма");
-            throw new ObjectNotFoundException("Ошибка получения фильма");
-        }
-
         log.info("Фильм с id {} передан", id);
         return getFilmById;
     }
@@ -83,11 +65,6 @@ public class FilmService {
         checkFilm(id);
 
         Optional<Film> deleteFilmById = filmDbStorage.deleteFilmById(id);
-
-        if (deleteFilmById.isEmpty()) {
-            log.warn("Ошибка удаления фильма");
-            throw new ObjectNotFoundException("Ошибка удаления фильма");
-        }
 
         log.info("Фильм с id {} удален", id);
         return deleteFilmById;
@@ -101,11 +78,6 @@ public class FilmService {
         }
 
         Optional<Film> addLikeToFilm = filmDbStorage.addLike(filmId, userId);
-
-        if (addLikeToFilm.isEmpty()) {
-            log.warn("Ошибка добавления лайка фильма");
-            throw new ObjectNotFoundException("Ошибка добавления лайка фильма");
-        }
 
         log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
 
@@ -122,11 +94,6 @@ public class FilmService {
 
         Optional<Film> removeLikeToFilm = filmDbStorage.removeLike(filmId, userId);
 
-        if (removeLikeToFilm.isPresent()) {
-            log.warn("Ошибка удаления лайка фильма");
-            throw new ObjectNotFoundException("Ошибка удаления лайка фильма");
-        }
-
         log.info("Пользователь {} удалил лайк к фильму {}", userId, filmId);
 
         return removeLikeToFilm;
@@ -136,10 +103,6 @@ public class FilmService {
 
         List<Film> getBestFilms = filmDbStorage.getBestFilms(count);
 
-        if (getBestFilms.isEmpty()) {
-            log.warn("Ошибка получения лучших фильмов");
-            throw new ObjectNotFoundException("Ошибка получения лучших фильмов");
-        }
         log.info("Отправлен список из {} самых популярных фильмов", count);
 
         return getBestFilms;

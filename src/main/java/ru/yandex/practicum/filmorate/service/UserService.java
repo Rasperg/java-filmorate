@@ -29,10 +29,6 @@ public class UserService {
     public Collection<User> getAllUsers() {
 
         Collection<User> getAllUsers = userDbStorage.getAllUsers();
-        if (getAllUsers.isEmpty()) {
-            log.warn("Ошибка отправки списка пользователей");
-            throw new ObjectNotFoundException("Ошибка отправки списка пользователей");
-        }
         log.info("Список пользователей отправлен");
         return getAllUsers;
     }
@@ -44,10 +40,6 @@ public class UserService {
 
         User createdUser = userDbStorage.createUser(user);
 
-        if (createdUser == null) {
-            log.warn("Пользователь не создан");
-            throw new ObjectNotFoundException("Пользователь не создан");
-        }
         log.info("Пользователь добавлен");
         return createdUser;
     }
@@ -60,10 +52,6 @@ public class UserService {
 
         User updateUser = userDbStorage.updateUser(user);
 
-        if (updateUser == null) {
-            log.warn("Пользователь {} не обновлён", user.getId());
-            throw new ObjectNotFoundException("Пользователь не обновлён " + user.getId());
-        }
         log.info("Пользователь {} обновлен", user.getId());
         return updateUser;
     }
@@ -72,10 +60,6 @@ public class UserService {
         checkUser(id);
         Optional<User> getUserById = userDbStorage.getUserById(id);
 
-        if (getUserById == null) {
-            log.warn("Пользователь {} не передан", id);
-            throw new ObjectNotFoundException("Пользователь не передан " + id);
-        }
         log.info("Пользователь с id {} передан", id);
         return getUserById;
     }
@@ -83,10 +67,6 @@ public class UserService {
     public Optional<User> deleteUserById(int id) {
         checkUser(id);
         Optional<User> deletedUser = userDbStorage.deleteUserById(id);
-        if (!deletedUser.isPresent()) {
-            log.warn("Не удалось удалить пользователя {}", id);
-            throw new ObjectNotFoundException("Не удалось удалить пользователя " + id);
-        }
         log.info("Пользователь с id {} удален", id);
         return deletedUser;
     }
@@ -104,10 +84,6 @@ public class UserService {
         }
 
         List<Integer> result = userDbStorage.followUser(followingId, followerId);
-        if (result.isEmpty()) {
-            log.warn("Пользователи не добавлены в друзья");
-            throw new ObjectNotFoundException("Пользователи не добавлены в друзья");
-        }
         log.info("Пользователь {} подписался на {}", followingId, followerId);
         return result;
     }
@@ -122,10 +98,6 @@ public class UserService {
 
         List<Integer> result = userDbStorage.unfollowUser(followingId, followerId);
 
-        if (result.isEmpty()) {
-            log.warn("Изменения не внесены");
-            throw new ObjectNotFoundException("Изменения не внесены");
-        }
         log.info("Пользователь {} отписался от {}", followerId, followingId);
 
         return result;
@@ -135,10 +107,6 @@ public class UserService {
         checkUser(id);
 
         List<User> getFriendsListById = userDbStorage.getFriendsListById(id);
-        if (getFriendsListById.isEmpty()) {
-            log.warn("Общие друзья не найдены");
-            throw new ObjectNotFoundException("Общие друзья не найдены");
-        }
         log.info("Запрос получения списка друзей пользователя {} выполнен", id);
 
         return getFriendsListById;
@@ -150,10 +118,6 @@ public class UserService {
 
         List<User> getCommonFriendsList = userDbStorage.getCommonFriendsList(firstId, secondId);
 
-        if (getCommonFriendsList.isEmpty()) {
-            log.warn("Друзья не найдены");
-            throw new ObjectNotFoundException("Друзья не найдены");
-        }
         log.info("Список общих друзей {} и {} отправлен", firstId, secondId);
 
         return getCommonFriendsList;

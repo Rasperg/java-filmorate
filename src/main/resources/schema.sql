@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS genre
 (
     genre_id int PRIMARY KEY,
-    name     varchar(20) not null
+    name     varchar(255) not null
 );
 
 CREATE TABLE IF NOT EXISTS users
@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS films_likes
 (
     film_id int not null,
     user_id int not null,
+    primary key (film_id, user_id),
     CONSTRAINT fk_film_like
         FOREIGN KEY (film_id)
             REFERENCES films (id),
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS film_genre
 (
     film_id  int not null,
     genre_id int not null,
+    primary key (film_id, genre_id),
     CONSTRAINT fk_film_genre
         FOREIGN KEY (film_id)
             REFERENCES films (id),
@@ -61,13 +63,14 @@ CREATE TABLE IF NOT EXISTS film_genre
 CREATE TABLE IF NOT EXISTS mpa
 (
     id   int        not null PRIMARY KEY,
-    name varchar(6) not null
+    name varchar(255) not null
 );
 
 CREATE TABLE IF NOT EXISTS mpa_films
 (
-    film_id int PRIMARY KEY,
+    film_id int not null,
     mpa_id  int not null,
+    primary key (film_id, mpa_id),
     CONSTRAINT fk_mpa
         FOREIGN KEY (mpa_id)
             REFERENCES mpa (id),

@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS film_genre
 
 CREATE TABLE IF NOT EXISTS mpa
 (
-    id   int        not null PRIMARY KEY,
+    id   int          not null PRIMARY KEY,
     name varchar(255) not null
 );
 

@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
@@ -32,12 +32,11 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Optional<Mpa> getById(int id) {
         String sql = "SELECT * FROM mpa WHERE id = ?";
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sql, id);
-        if (!mpaRows.next()) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeMpa, id));
+        } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeMpa, id));
     }
 
     Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {

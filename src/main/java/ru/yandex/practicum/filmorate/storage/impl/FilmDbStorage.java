@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -39,7 +40,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        String sql = "SELECT * FROM films";
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+                " FROM films f " +
+                " JOIN mpa_films mf ON f.id = mf.film_id " +
+                " JOIN mpa m ON mf.MPA_ID = m.id";
 
         return jdbcTemplate.query(sql, this::makeFilm);
     }
@@ -108,13 +112,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilmById(int id) {
-        String sql = "SELECT * FROM films WHERE id = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql, id);
-        if (!filmRows.next()) {
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+                " FROM films f " +
+                " JOIN mpa_films mf ON f.id = mf.film_id " +
+                " JOIN mpa m ON mf.MPA_ID = m.id " +
+                " WHERE f.ID = ? ";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeFilm, id));
+        } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeFilm, id));
     }
 
     @Override
@@ -149,10 +156,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getBestFilms(int count) {
-        String sql = "SELECT id, name, description, release_date, duration " +
-                "FROM films " +
-                "LEFT JOIN films_likes fl ON films.id = fl.film_id " +
-                "group by films.id, fl.film_id IN ( " +
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+                " FROM films f " +
+                "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+                " JOIN mpa_films mf ON f.id = mf.film_id " +
+                " JOIN mpa m ON mf.MPA_ID = m.id " +
+                "group by f.id, fl.film_id IN ( " +
                 "    SELECT film_id " +
                 "    FROM films_likes " +
                 ") " +
@@ -168,8 +177,12 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         long duration = rs.getLong("duration");
+        int mpa_id = rs.getInt("mpa_id");
+        String mpa_name = rs.getString("mpa_name");
 
-        return new Film(id, name, description, releaseDate, duration, findMpa(id), findGenres(id));
+        Mpa mpa = new Mpa(mpa_id, mpa_name);
+
+        return new Film(id, name, description, releaseDate, duration, mpa, findGenres(id));
     }
 
     private List<Genre> findGenres(int filmId) {

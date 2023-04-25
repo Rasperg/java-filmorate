@@ -22,9 +22,16 @@ public class GenreService {
     }
 
     public Collection<Genre> findAll() {
+
+        Collection<Genre> findAll = genreDbStorage.findAll();
+
+        if (findAll.isEmpty()) {
+            log.warn("Ошибка получения жанров");
+            throw new ObjectNotFoundException("Ошибка получения жанров");
+        }
         log.info("Список жанров отправлен");
 
-        return genreDbStorage.findAll();
+        return findAll;
     }
 
     public Optional<Genre> getById(int id) {

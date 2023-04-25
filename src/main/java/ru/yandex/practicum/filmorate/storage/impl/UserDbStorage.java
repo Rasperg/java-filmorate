@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -69,12 +69,11 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Optional<User> getUserById(int id) {
         String sql = "select * from USERS where ID = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql, id);
-        if (!filmRows.next()) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeUser, id));
+        } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::makeUser, id));
     }
 
     @Override
@@ -82,7 +81,6 @@ public class UserDbStorage implements UserStorage {
         String sql = "delete from USERS where ID = ?";
         Optional<User> user = getUserById(id);
         jdbcTemplate.update(sql, id);
-        log.info("Пользователь с id {} удален", id);
 
         return user;
     }
@@ -128,7 +126,7 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sql, this::makeUser, firstId, secondId);
     }
 
-    public User makeUser(ResultSet rs, int rowNum) throws SQLException {
+    private User makeUser(ResultSet rs, int rowNum) throws SQLException {
         int id = rs.getInt("id");
         String email = rs.getString("email");
         String login = rs.getString("login");

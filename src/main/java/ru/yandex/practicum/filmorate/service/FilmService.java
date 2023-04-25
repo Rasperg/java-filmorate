@@ -28,34 +28,69 @@ public class FilmService {
     }
 
     public Collection<Film> getAllFilms() {
+
+        Collection<Film> getAllFilms = filmDbStorage.getAllFilms();
+
+        if (getAllFilms.isEmpty()) {
+            log.warn("Ошибка получения фильмов");
+            throw new ObjectNotFoundException("Ошибка получения фильмов");
+        }
+
         log.info("Список фильмов передан.");
-        return filmDbStorage.getAllFilms();
+        return getAllFilms;
     }
 
     public Film createFilm(Film film) {
         validate(film);
+        Film createFilm = filmDbStorage.createFilm(film);
+        if (createFilm == null) {
+            log.warn("Ошибка создания фильма");
+            throw new ObjectNotFoundException("Ошибка создания фильма");
+        }
         log.info("Фильм добавлен");
-        return filmDbStorage.createFilm(film);
+        return createFilm;
     }
 
     public Film updateFilm(Film film) {
         validate(film);
         checkFilm(film.getId());
 
+        Film updateFilm = filmDbStorage.updateFilm(film);
+        if (updateFilm == null) {
+            log.warn("Ошибка изменения фильма");
+            throw new ObjectNotFoundException("Ошибка изменения фильма");
+        }
+
         log.info("Фильм {} обновлен", film.getId());
-        return filmDbStorage.updateFilm(film);
+        return updateFilm;
     }
 
     public Optional<Film> getFilmById(int id) {
         checkFilm(id);
+
+        Optional<Film> getFilmById = filmDbStorage.getFilmById(id);
+
+        if (getFilmById.isEmpty()) {
+            log.warn("Ошибка получения фильма");
+            throw new ObjectNotFoundException("Ошибка получения фильма");
+        }
+
         log.info("Фильм с id {} передан", id);
-        return filmDbStorage.getFilmById(id);
+        return getFilmById;
     }
 
     public Optional<Film> deleteFilmById(int id) {
         checkFilm(id);
+
+        Optional<Film> deleteFilmById = filmDbStorage.deleteFilmById(id);
+
+        if (deleteFilmById.isEmpty()) {
+            log.warn("Ошибка удаления фильма");
+            throw new ObjectNotFoundException("Ошибка удаления фильма");
+        }
+
         log.info("Фильм с id {} удален", id);
-        return filmDbStorage.deleteFilmById(id);
+        return deleteFilmById;
     }
 
     public Optional<Film> addLikeToFilm(int filmId, int userId) {
@@ -64,9 +99,17 @@ public class FilmService {
             log.warn("Пользователь {} не найден.", userId);
             throw new ObjectNotFoundException("Фильм или пользователь не найдены");
         }
+
+        Optional<Film> addLikeToFilm = filmDbStorage.addLike(filmId, userId);
+
+        if (addLikeToFilm.isEmpty()) {
+            log.warn("Ошибка добавления лайка фильма");
+            throw new ObjectNotFoundException("Ошибка добавления лайка фильма");
+        }
+
         log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
 
-        return filmDbStorage.addLike(filmId, userId);
+        return addLikeToFilm;
     }
 
     public Optional<Film> removeLikeToFilm(int filmId, int userId) {
@@ -76,15 +119,30 @@ public class FilmService {
             log.warn("Пользователь {} не найден.", userId);
             throw new ObjectNotFoundException("Фильм или пользователь не найдены");
         }
+
+        Optional<Film> removeLikeToFilm = filmDbStorage.removeLike(filmId, userId);
+
+        if (removeLikeToFilm.isPresent()) {
+            log.warn("Ошибка удаления лайка фильма");
+            throw new ObjectNotFoundException("Ошибка удаления лайка фильма");
+        }
+
         log.info("Пользователь {} удалил лайк к фильму {}", userId, filmId);
 
-        return filmDbStorage.removeLike(filmId, userId);
+        return removeLikeToFilm;
     }
 
     public List<Film> getBestFilms(int count) {
+
+        List<Film> getBestFilms = filmDbStorage.getBestFilms(count);
+
+        if (getBestFilms.isEmpty()) {
+            log.warn("Ошибка получения лучших фильмов");
+            throw new ObjectNotFoundException("Ошибка получения лучших фильмов");
+        }
         log.info("Отправлен список из {} самых популярных фильмов", count);
 
-        return filmDbStorage.getBestFilms(count);
+        return getBestFilms;
     }
 
     private void checkFilm(int id) {

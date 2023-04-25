@@ -22,9 +22,15 @@ public class MpaService {
     }
 
     public Collection<Mpa> findAll() {
-        log.info("Список рейтингов отправлен");
+        Collection<Mpa> findAll = mpaDbStorage.findAll();
 
-        return mpaDbStorage.findAll();
+        if (findAll.isEmpty()) {
+            log.warn("Ошибка получения списка рейтингов");
+            throw new ObjectNotFoundException("Ошибка получения списка рейтингов");
+        }
+
+        log.info("Список рейтингов отправлен");
+        return findAll;
     }
 
     public Optional<Mpa> getById(int id) {

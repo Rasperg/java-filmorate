@@ -40,10 +40,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_Id, m.name as mpa_Name" +
                 " FROM films f " +
                 " JOIN mpa_films mf ON f.id = mf.film_id " +
-                " JOIN mpa m ON mf.MPA_ID = m.id";
+                " JOIN mpa m ON mf.mpa_id = m.id";
 
         return jdbcTemplate.query(sql, this::makeFilm);
     }
@@ -112,7 +112,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilmById(int id) {
-        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_Id, m.name as mpa_Name" +
                 " FROM films f " +
                 " JOIN mpa_films mf ON f.id = mf.film_id " +
                 " JOIN mpa m ON mf.MPA_ID = m.id " +
@@ -156,11 +156,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getBestFilms(int count) {
-        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_id, m.name as mpa_name" +
+        String sql = "SELECT f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.duration, m.id as mpa_Id, m.name as mpa_Name" +
                 " FROM films f " +
                 "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
                 " JOIN mpa_films mf ON f.id = mf.film_id " +
-                " JOIN mpa m ON mf.MPA_ID = m.id " +
+                " JOIN mpa m ON mf.mpa_id = m.id " +
                 "group by f.id, fl.film_id IN ( " +
                 "    SELECT film_id " +
                 "    FROM films_likes " +
@@ -177,8 +177,8 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         long duration = rs.getLong("duration");
-        int mpa_id = rs.getInt("mpa_id");
-        String mpa_name = rs.getString("mpa_name");
+        int mpa_id = rs.getInt("mpa_Id");
+        String mpa_name = rs.getString("mpa_Name");
 
         Mpa mpa = new Mpa(mpa_id, mpa_name);
 

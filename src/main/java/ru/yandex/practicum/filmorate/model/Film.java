@@ -1,37 +1,37 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Film {
-    @Getter
-    @Setter
+    @PositiveOrZero
     private int id;
 
-    @NotNull(message = "Имя не может отсутствовать")
-    @NotBlank(message = "Имя не может быть пустым")
-    @Getter
+    @NotBlank(message = "Некорректное название фильма")
+    @Size(max = 60, message = "Слишком длинное название фильма")
     private String name;
 
-    @Getter
-    @Size(min = 1, max = 200, message = "Описание должно содержать от 1 до 200 символов")
+    @NotNull(message = "Отсутствует описание фильма")
+    @Size(min = 1, max = 200, message = "Описание превышает максимальный размер(200символов)")
     private String description;
 
-    @Getter
+
     private LocalDate releaseDate;
 
-    @Getter
-    @Positive(message = "Продолжительность должны быть положительной")
-    private int duration;
+    @Min(value = 1, message = "Некорректная продолжительность фильма")
+    private long duration;
 
-    @Getter
-    private Set<Integer> usersLikes = new HashSet<>();
+    private Mpa mpa;
+
+    private List<Genre> genres;
 }

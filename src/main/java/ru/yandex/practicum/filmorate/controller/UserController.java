@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -36,32 +37,33 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id) {
+    public Optional<User> getById(@PathVariable int id) {
         return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUserById(@PathVariable int id) {
+    public Optional<User> deleteById(@PathVariable int id) {
         return userService.deleteUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public List<User> uniteFriends(@PathVariable int id, @PathVariable int friendId) {
-        return userService.uniteFriends(id, friendId);
+    public List<Integer> addFriend(@PathVariable int id, @PathVariable int friendId) {
+        return userService.followUser(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public List<User> removeFriends(@PathVariable int id, @PathVariable int friendId) {
-        return userService.removeFriends(id, friendId);
+    public List<Integer> removeFriend(@PathVariable int id, @PathVariable int friendId) {
+        return userService.unfollowUser(id, friendId);
     }
 
-    @GetMapping("{id}/friends")
+    @GetMapping("/{id}/friends")
     public List<User> getFriendsList(@PathVariable int id) {
         return userService.getFriendsListById(id);
     }
 
-    @GetMapping("/{id}/friends/common/{friendId}")
-    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int friendId) {
-        return userService.getCommonFriendsList(id, friendId);
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriendsList(id, otherId);
     }
+
 }
